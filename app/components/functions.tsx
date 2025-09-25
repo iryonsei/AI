@@ -29,3 +29,13 @@ export const MermaidChart = ({ chart }: { chart: string }) => {
 
   return <div ref={ref} />;
 };
+
+
+export const normalizeMarkdown = (raw: string): string => {
+  return raw
+    .replace(/[\u2010-\u2015\u2212\uFE63\uFF0D]/g, "-")
+    .replace(/[\u00A0\u202F]/g, " ")
+    .replace(/(\d)\s+%/g, "$1%")
+    .replace(/\|\|/g, "|---|")
+    .replace(/\*\*(.*?)\*\*/g, (_, inner) => `<strong>${inner}</strong>`);
+};

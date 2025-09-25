@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, use, useEffect, useRef, useState, JSX } from 'react';
+import { useState, JSX, useRef, useEffect, useMemo } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -8,7 +8,7 @@ interface MarkdownComponents {
   [key: string]: ({ node, ...props }: { node?: React.ReactNode; [key: string]: any }) => JSX.Element | null;
 }
 
-export const myMarkdown = (markDownProps: any): MarkdownComponents => {
+export const myMarkdown = (): MarkdownComponents => {
   return {
         h1: ({node, ...props}) => (
           <h1 
@@ -125,20 +125,12 @@ export const myMarkdown = (markDownProps: any): MarkdownComponents => {
           <hr className="my-5 border-gray-300" {...props} />
         ),
         code: ({ node, inline, className, children, ...props }: any) => {
-          const content = String(children || '').trim();
-          
-          if (!content) return null; // 빈 문자열이거나 inline code면 인라인으로만 처리
+          const content = String(children || "").trim();
 
-          const match = /language-(\w+)/.exec(className || '');
+          if (!content) return null; // 빈 문자열 무시
+
+          const match = /language-(\w+)/.exec(className || "");
           const lang = match ? match[1] : null;
-
-          if (inline) { // inline code
-            return <code className="rounded px-1 bg-stone-100 text-sm">{children}</code>;
-          }
-          
-          if (!lang) { // 일반 텍스트 블록 (fenced code가 아닌 경우)도 출력
-            return <span className="my-2 whitespace-pre-wrap">{content}</span>;
-          }
 
           const [copied, setCopied] = useState(false);
 
@@ -150,32 +142,54 @@ export const myMarkdown = (markDownProps: any): MarkdownComponents => {
             } catch {}
           }
 
+          // ---- 스트리밍 최적화: chunk 버퍼링 ----
+          const bufferedContent = useRef(content);
+          const [displayContent, setDisplayContent] = useState(content);
+
+          // throttle: 50ms마다 상태 업데이트
+          useEffect(() => {
+            bufferedContent.current = content;
+            const interval = setInterval(() => {
+              setDisplayContent(bufferedContent.current);
+            }, 50); // 50ms 간격으로 화면 업데이트
+            return () => clearInterval(interval);
+          }, [content]);
+
+          // ---- SyntaxHighlighter memoization ----
+          const highlightedCode = useMemo(() => {
+            if (!lang) return null;
+            return (
+              <SyntaxHighlighter
+                language={lang}
+                style={oneDark}
+                customStyle={{ padding: "16px", fontSize: "13px", margin: 0 }}
+              >
+                {displayContent}
+              </SyntaxHighlighter>
+            );
+          }, [displayContent, lang]);
+
+          if (inline) {    // inline code 처리
+            return <code className="rounded px-1 bg-stone-100 text-sm">{children}</code>;
+          }
+
+          if (!lang) {    // fenced code가 아닌 일반 텍스트 블록
+            return <span className="my-2 whitespace-pre-wrap">{content}</span>;
+          }
+
           return (
-            <>
-              <div className="my-2 overflow-hidden bg-stone-100 rounded-sm overflow-x-auto">
-                <div className="flex items-center justify-between p-1 text-[12px]">
-                  <span className='ml-1'>{lang}</span>
-                  <button
-                    onClick={onCopy}
-                    className="text-sm px-2 py-0.5 bg-white rounded text-[12px] cursor-pointer"
-                  >
-                    {copied ? 'Copied' : 'Copy'}
-                  </button>
-                </div>
-                {/* <pre className="overflow-x-auto p-4 text-[13px]">
-                  <code className={className}>{content}</code>
-                </pre> */}
-                <div className='bg-black'>
-                  <SyntaxHighlighter
-                    language={lang}
-                    style={oneDark} // VS Code 느낌
-                    customStyle={{ padding: '16px', fontSize: '13px', margin: 0 }}
-                  >
-                    {content}
-                  </SyntaxHighlighter>
-                </div>
+            <div className="my-2 overflow-hidden bg-stone-100 rounded-sm overflow-x-auto">
+              <div className="flex items-center justify-between p-1 text-[12px]">
+                <span className="ml-1">{lang}</span>
+                <button
+                  onClick={onCopy}
+                  className="text-sm px-2 py-0.5 bg-white rounded text-[12px] cursor-pointer"
+                >
+                  {copied ? "Copied" : "Copy"}
+                </button>
               </div>
-            </>
+              <div className="bg-black">{highlightedCode}</div>
+            </div>
           );
         }
       }

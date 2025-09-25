@@ -44,11 +44,38 @@ export default async function sendMessage(
     const reader = res.body.getReader();  // ReadableStream에서 reader를 꺼냄. 이 reader는 스트림을 한 번에 다 읽는 게 아니라, 조각(chunk) 단위로 읽기를 가능하게 해줌.
     const decoder = new TextDecoder("utf-8"); // 서버에서 오는 chunk는 바이너리(바이트 배열) 형태라 바로 문자열로 못 씀. TextDecoder("utf-8")을 써서 Uint8Array → 문자열 변환기로 준비.
 
+    const updateAssistantMessage = (delta: any) => (prev: any[]) => {
+      const last = prev[prev.length - 1];
+      let newMessage;
+
+      if (delta.content || delta.reasoning_content) {
+        if (!last || last.role === "user") {
+          newMessage = {
+            role: "assistant",
+            content: delta.content || "",
+            reasoning: delta.reasoning_content || ""
+          };
+          return [...prev, newMessage];
+        } else {
+          newMessage = {
+            ...last,
+            content: (last.content || "") + (delta.content || ""),
+            reasoning: (last.reasoning || "") + (delta.reasoning_content || "")
+          };
+          const updated = [...prev];
+          updated[updated.length - 1] = newMessage;
+          return updated;
+        }
+      }
+      return prev;
+    };
+
     let buffer = ""; // 누적 버퍼
     let isDone = false;
-
+    
     try {
       while (!isDone) {
+
           const { done, value } = await reader.read();
           if (done) {
             console.log("✅ Stream finished (done=true)");
@@ -58,26 +85,22 @@ export default async function sendMessage(
 
           const chunk = decoder.decode(value, { stream: true });
           buffer += chunk;
-
           const lines = buffer.split("\n");
-          buffer = lines.pop() || ""; // 마지막 라인은 불완전할 수 있으므로 buffer 에 남김
-
+          buffer = lines.pop() || "";   // 마지막 라인은 불완전할 수 있으므로 buffer 에 남김
           
           for (const line of lines) {
+
             if (!line.startsWith("data: ")) continue;
-
             const data = line.replace(/^data: /, "").trim();
-            console.log("📩 raw line:", data);
-            
+            // console.log("📩 raw line:", data);            
             if (!data) continue;
-
             if (data === "[DONE]") {
               console.log("🛑 Received [DONE]");
               setResponseDone(true);
               isDone = true;
               break;
             }
-
+            
             try {
               const json = JSON.parse(data);
               const delta = json.choices?.[0]?.delta;
@@ -85,30 +108,7 @@ export default async function sendMessage(
 
               // if (delta.content) setOutput(prev => prev + delta.content);
               // if (delta.reasoning_content) setReasoning(prev => prev + delta.reasoning_content);
-              setMessages(prev => {
-                const last = prev[prev.length - 1];
-                let newMessage;
-                if (delta.content || delta.reasoning_content) {
-                  if (!last || last.role === "user") {
-                    newMessage = {
-                      role: "assistant",
-                      content: delta.content || "",
-                      reasoning: delta.reasoning_content || ""
-                    };
-                    return [...prev, newMessage];
-                  } else {
-                    newMessage = {
-                      ...last,
-                      content: (last.content || "") + (delta.content || ""),
-                      reasoning: (last.reasoning || "") + (delta.reasoning_content || "")
-                    };
-                    const updated = [...prev];
-                    updated[updated.length - 1] = newMessage;
-                    return updated;
-                  }
-                }
-                return prev;
-              });
+              setMessages(updateAssistantMessage(delta));
             } catch (err) {
               console.warn("⚠️ JSON parse error, skipping:", err);
             }
