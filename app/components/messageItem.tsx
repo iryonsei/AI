@@ -39,7 +39,7 @@ export const MessageItem = React.memo(({
     <div  
         key={index} 
         ref={messageItemRef}
-        className="pb-2 border-y border-slate-300 bg-blue-500"
+        className="pb-2"
     >
         {/* <div className={`${isLastMsg ? "border border-red-500" : ""}`}></div> */}
         <div 

@@ -71,39 +71,10 @@ export default function ChatLayout() {
     }
   }, [chatStarted]);  
 
-  
-
-  // useEffect(() => {
-  //   if (!messages.length) return;
-  //   const lastMsg = messages[messages.length - 1];
-  //   if (lastMsg.role === "assistant" && topAssistantMsgRef.current ) {
-  //     const container = totalContainerRef.current; // 스크롤 컨테이너
-  //     if (container) {
-  //       setTimeout(() => {
-  //         container.scrollTo({
-  //           top: container.scrollHeight - topAssistantMsgRef.current!.scrollHeight,
-  //           behavior: "smooth",
-  //         })
-  //       }, 100);
-  //     //   requestAnimationFrame(() => {
-  //     //   requestAnimationFrame(() => {
-  //     //     container.scrollTo({
-  //     //       top: container.scrollHeight - topAssistantMsgRef.current!.scrollHeight,
-  //     //       behavior: "smooth",
-  //     //     });
-  //     //   });
-  //     // });
-  //     }
-  //   }
-  // }, [messages]);
-
-
   useEffect(() => {
     setContainerHeight(0);
     setLastContainerHeight(0);  // setLast2ContainerHeight(0);
   }, [inputFocus]);
-
-
 
   // useEffect(() => {
   //   console.log(messages);
@@ -119,21 +90,11 @@ export default function ChatLayout() {
       <div 
         className={`w-full min-w-[300px] h-[calc(100vh-150px)] text-[15px] 
           overflow-x-hidden overflow-y-scroll flex justify-center 
-          md:pl-[15px] bg-orange-500
+          md:pl-[15px]
         `}
         ref={totalContainerRef}
       >
-        <div className={`${width} bg-green-500`} 
-          // style={{
-          //   minHeight: 
-          //     (messageItemRef?.current?.getBoundingClientRect().height ?? 0) >= clientHeight 
-          //     ? `${containerHeight}px` : 
-          //     `${containerHeight + clientHeight - 200 - lastContainerHeight}px`, // 50pixel은 header , 150pixel은 inputbox, 50pixel은 여유공간 줄여서 유저 메세지 나오게
-          //     // messages.length > 2 && chatStarted ? `${containerHeight + clientHeight - 200}px`:   
-          //     // (messageItemRef?.current?.getBoundingClientRect().height ?? 0) < clientHeight ? `${containerHeight + clientHeight - 200 - lastContainerHeight}px`: 
-          //     // `0px`,
-          // }}
-        >
+        <div className={`relative ${width}`}>
           {messages.map((msg, index) => {
             if(msg.role == "system" || msg.role === "developer") return null;
             const isLastMsg = index === messages.length - 1
@@ -154,10 +115,18 @@ export default function ChatLayout() {
               />
             )}
           )}
-          <div className={`relative w-full bg-yellow-500`} style={{ height: `calc(100vh - 150px - 50px)` }}/> 
+          <div 
+            className={`relative w-full`} 
+            style={{ 
+              height: 
+                chatStarted ? `calc(100vh - 150px - 50px)` :
+                (messageItemRef?.current?.getBoundingClientRect().height ?? 0) >= clientHeight ? `0px` : 
+                `calc(100vh - 150px - ${lastContainerHeight}px - 50px)` 
+            }}
+          /> 
         </div>
       </div>
-      <div className={`relative w-full h-[100px] bg-red-500`} />
+      <div className={`relative w-full h-[100px]`} />
       {/* <div className={`relative ${width} ${lastContainerHeight > clientHeight && "min-h-[150px]"}`} /> */}
 
       <InputBox 
