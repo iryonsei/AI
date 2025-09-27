@@ -10,39 +10,45 @@ interface MarkdownComponents {
 
 export const myMarkdown = (): MarkdownComponents => {
   return {
+        blockquote: ({ node, ...props }) => (
+          <blockquote
+            className="border-l-3 border-sky-500 p-3 text-sky-700 bg-sky-50 my-10 leading-[25px]"
+            {...props}
+          />
+        ),
         h1: ({node, ...props}) => (
           <h1 
-            className="text-xl font-bold mt-5"
+            className="text-[18px] font-bold my-3 bg-slate-200 px-2 py-0.5 border-y border-slate-400 w-fit"
             {...props} 
           />
         ),
         h2: ({node, ...props}) => (
           <h2 
-            className="text-lg font-bold mt-5"
+            className="text-[16px] font-bold my-3 bg-slate-200 px-2 py-0.5 border-y border-slate-400 w-fit"
             {...props} 
           />
         ),
         h3: ({node, ...props}) => (
           <h3 
-            className="text-lg font-bold mt-5"
+            className="font-bold mt-7 underline decoration-1 decoration-gray-400 underline-offset-5"
             {...props} 
           />
         ),
         h4: ({node, ...props}) => (
           <h4 
-            className="font-bold mt-10"
+            className="font-bold mt-7"
             {...props} 
           />
         ),
         h5: ({node, ...props}) => (
           <h5 
-            className="font-bold mb-1"
+            className="font-bold mt-5"
             {...props} 
           />
         ),
         h6: ({node, ...props}) => (
           <h6 
-            className="font-bold mb-1"
+            className="font-bold mt-3"
             {...props} 
           />
         ),

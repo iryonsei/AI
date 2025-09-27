@@ -28,7 +28,7 @@ body {
 /* 커스텀 스크롤바 */
 .custom-scrollbar {
   scrollbar-width: thin;            /* Firefox */
-  scrollbar-color: #9ca3af #f3f3f3; /* thumb color / track color */
+  scrollbar-color: #d0d5dd #ffffff; /* thumb color / track color */
 }
 
 /* Webkit 브라우저 */

@@ -11,6 +11,7 @@ export default function Page() {
   const [reasoning, setReasoning] = useState("");
   const [chatStarted, setChatStarted] = useState(false);
   const [responseDone, setResponseDone] = useState(false);
+  const [inputFocus, setInputFocus] = useState(false);
 
   return (
     <ChatContext.Provider
@@ -21,6 +22,7 @@ export default function Page() {
         reasoning, setReasoning,
         chatStarted, setChatStarted,
         responseDone, setResponseDone,
+        inputFocus, setInputFocus,
       }}
     >
       <ChatLayout />

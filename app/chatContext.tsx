@@ -19,6 +19,8 @@ type ChatContextType = {
   setChatStarted: React.Dispatch<React.SetStateAction<boolean>>;
   responseDone: boolean;
   setResponseDone: React.Dispatch<React.SetStateAction<boolean>>;
+  inputFocus: boolean;
+  setInputFocus: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const ChatContext = createContext<ChatContextType>(
@@ -35,5 +37,7 @@ export const ChatContext = createContext<ChatContextType>(
     setChatStarted: () => {},
     responseDone: false,
     setResponseDone: () => {},
+    inputFocus: false,
+    setInputFocus: () => {},
   }
 );

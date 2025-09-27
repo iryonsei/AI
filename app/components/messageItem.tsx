@@ -12,32 +12,54 @@ import { normalizeMarkdown } from "./functions";
 export const MessageItem = React.memo(({ 
     msg, 
     index, 
-    isLastUser, 
+    isLastMsg, 
     topUserMsgRef,
-    containerRef }: { 
+    topAssistantMsgRef,
+    messageItemRef,
+    chatStarted,
+    containerHeight,
+    setContainerHeight,
+    lastContainerHeight,
+    setLastContainerHeight
+ }: { 
     msg: any, 
     index: number, 
-    isLastUser: boolean, 
+    isLastMsg: boolean, 
     topUserMsgRef: React.RefObject<HTMLDivElement | null>,
-    containerRef: React.RefObject<HTMLDivElement | null>, }) => {
+    topAssistantMsgRef: React.RefObject<HTMLDivElement | null>,
+    messageItemRef: React.RefObject<HTMLDivElement | null>,
+    chatStarted: boolean,
+    containerHeight: number,
+    setContainerHeight: React.Dispatch<React.SetStateAction<number>>,
+    lastContainerHeight: number,
+    setLastContainerHeight: React.Dispatch<React.SetStateAction<number>>
+  }) => {
 
   return (
     <div  
         key={index} 
-        ref={containerRef}
-        className="pb-2"
+        ref={messageItemRef}
+        className="pb-2 border-y border-slate-300 bg-blue-500"
     >
+        {/* <div className={`${isLastMsg ? "border border-red-500" : ""}`}></div> */}
         <div 
-        ref={isLastUser ? topUserMsgRef : null}
-        className={`${msg.role === "user" ? "text-right" : "text-left"}`}
+            ref={isLastMsg && msg.role === "user" ? topUserMsgRef : isLastMsg && msg.role === "assistant" ? topAssistantMsgRef : null}
+            className={`${msg.role === "user" ? "text-right" : "text-left"}`}
         >
         {msg.role === "assistant" && msg?.reasoning && (
-            <Reasoning reasoning={msg.reasoning} />
+            <Reasoning 
+                reasoning={msg.reasoning} 
+                isLastMsg={isLastMsg} 
+                chatStarted={chatStarted}
+                containerHeight={containerHeight}
+                setContainerHeight={setContainerHeight}
+                lastContainerHeight={lastContainerHeight}
+                setLastContainerHeight={setLastContainerHeight}
+            />
         )}
         <div  // index 0 => system, index 1 => developer, index 2 => first user message
             className={` 
-                ${index == 2 ? "mt-[60px]" : ""}  
-                ${msg.role === "user" ? "inline-block bg-slate-200 rounded-[20px] p-2 px-4 mt-[20px]" : ""}
+                ${msg.role === "user" ? "inline-block bg-slate-200 rounded-[20px] p-2 px-4" : "pb-[40px]"}
             `}
         >
             <ReactMarkdown
