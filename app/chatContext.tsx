@@ -19,8 +19,13 @@ type ChatContextType = {
   setChatStarted: React.Dispatch<React.SetStateAction<boolean>>;
   responseDone: boolean;
   setResponseDone: React.Dispatch<React.SetStateAction<boolean>>;
-  inputFocus: boolean;
-  setInputFocus: React.Dispatch<React.SetStateAction<boolean>>;
+  inputInitial: boolean;
+  setInputInitial: React.Dispatch<React.SetStateAction<boolean>>;
+  keyboardHeight: number;
+  setKeyboardHeight: React.Dispatch<React.SetStateAction<number>>;
+  viewPoint: number;
+  setViewPoint: React.Dispatch<React.SetStateAction<number>>;
+  isMobile: boolean;
 };
 
 export const ChatContext = createContext<ChatContextType>(
@@ -37,7 +42,12 @@ export const ChatContext = createContext<ChatContextType>(
     setChatStarted: () => {},
     responseDone: false,
     setResponseDone: () => {},
-    inputFocus: false,
-    setInputFocus: () => {},
+    inputInitial: false,
+    setInputInitial: () => {},
+    keyboardHeight: 0,
+    setKeyboardHeight: () => {},
+    viewPoint: 0,
+    setViewPoint: () => {},
+    isMobile: false
   }
 );

@@ -19,7 +19,14 @@
   }
 }
 
-body {
+.app-wrapper {
+  height: var(--app-height);
+}
+
+html, body, #root {
+  height: 100%; /* h-screen 대신 */
+  overflow: hidden; /* 키보드로 전체 레이아웃 밀리는 거 방지 */
+  overscroll-behavior: none; /* 터치 스크롤 시 바운스 효과 방지 */
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;

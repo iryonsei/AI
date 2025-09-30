@@ -8,7 +8,7 @@ export default async function sendMessage(
         reasoning, setReasoning, 
         chatStarted, setChatStarted,
         responseDone, setResponseDone,
-        inputFocus, setInputFocus
+        inputInitial, setInputInitial
     } : { 
         messages: { role: string; reasoning?: string, content: string }[]; 
         setMessages: React.Dispatch<React.SetStateAction<{ role: string; reasoning?: string, content: string; }[]>>;         
@@ -17,7 +17,7 @@ export default async function sendMessage(
         reasoning: string; setReasoning: React.Dispatch<React.SetStateAction<string>>; 
         chatStarted: boolean; setChatStarted: React.Dispatch<React.SetStateAction<boolean>>;
         responseDone: boolean; setResponseDone: React.Dispatch<React.SetStateAction<boolean>>;
-        inputFocus: boolean; setInputFocus: React.Dispatch<React.SetStateAction<boolean>>;
+        inputInitial: boolean; setInputInitial: React.Dispatch<React.SetStateAction<boolean>>;
     }
 ) {
 

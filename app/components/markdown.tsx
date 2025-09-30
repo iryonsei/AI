@@ -106,7 +106,7 @@ export const myMarkdown = (): MarkdownComponents => {
             {...props}
           ></span>
         ),
-        strong: ({node, children}: any) => (
+        strong: ({children}: any) => (
           <span className='font-semibold'>
             {children}
           </span>

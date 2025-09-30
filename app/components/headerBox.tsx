@@ -18,7 +18,7 @@ export const HeaderBox = (
     reasoning, setReasoning,
     chatStarted, setChatStarted,
     responseDone, setResponseDone, 
-    inputFocus, setInputFocus
+    inputInitial, setInputInitial
   } = props;
   
   return (
@@ -32,7 +32,7 @@ export const HeaderBox = (
                 className="flex items-center" 
                 onClick={() => {
                     setMessages(InitialSystemMessages);
-                    setInputFocus(true);
+                    setInputInitial(true);
                 }}>
             <Image
                 src="/yonsei.gif"

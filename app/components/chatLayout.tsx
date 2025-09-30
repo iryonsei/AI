@@ -6,7 +6,6 @@ import { MessageItem } from "./messageItem";
 import { InputBox } from "./inputBox";
 import { HeaderBox } from "./headerBox";
 import { InitialSystemMessages } from "./systemMessages";
-import { Preahvihear } from "next/font/google";
 
 export default function ChatLayout() {
   const props = useContext(ChatContext);
@@ -17,7 +16,10 @@ export default function ChatLayout() {
     reasoning, setReasoning, 
     chatStarted, setChatStarted,
     responseDone, setResponseDone, 
-    inputFocus, setInputFocus
+    inputInitial, setInputInitial,
+    keyboardHeight, setKeyboardHeight,
+    viewPoint, setViewPoint,
+    isMobile
   } = props;
 
   const totalContainerRef = useRef<HTMLDivElement | null>(null);
@@ -39,16 +41,17 @@ export default function ChatLayout() {
   }, [responseDone]);
 
   useEffect(() => {
-    editableRef.current && editableRef.current.focus();
-    setInputFocus(false);
-  }, [chatStarted, inputFocus]); 
+    if(!isMobile) {
+      editableRef.current && editableRef.current.focus();
+    }
+    setInputInitial(false);
+  }, [chatStarted, inputInitial]);
 
   const [clientHeight, setClientHeight] = useState(0);
   useEffect(() => {
     setClientHeight(window.innerHeight);
     // console.log("★clientHeight:", window.innerHeight);
   }, []);
-
 
   const [containerHeight, setContainerHeight] = useState(0);
   const [lastContainerHeight, setLastContainerHeight] = useState(0);  // const [last2ContainerHeight, setLast2ContainerHeight] = useState(0);
@@ -59,9 +62,9 @@ export default function ChatLayout() {
       const currentTotalHeight = currentHeight + containerHeight;
       setContainerHeight(currentTotalHeight);  // setLast2ContainerHeight(currentHeight + lastContainerHeight);
       setLastContainerHeight(currentHeight);  
-      console.log(messages[messages.length - 1].role)
-      console.log("마지막메세지높이:", currentHeight);
-      console.log("컨테이너높이:", currentTotalHeight);
+      // console.log(messages[messages.length - 1].role)
+      // console.log("마지막메세지높이:", currentHeight);
+      // console.log("컨테이너높이:", currentTotalHeight);
       if (chatStarted){
         totalContainerRef.current && totalContainerRef.current.scrollTo({
           top: currentTotalHeight,
@@ -74,27 +77,36 @@ export default function ChatLayout() {
   useEffect(() => {
     setContainerHeight(0);
     setLastContainerHeight(0);  // setLast2ContainerHeight(0);
-  }, [inputFocus]);
+  }, [inputInitial]);
 
   // useEffect(() => {
   //   console.log(messages);
   // }, [messages]);
 
+  // useEffect(() => {
+  //   console.log("isMobile:", isMobile);
+  // }, [isMobile]);
+
   return (
     <>
     <div 
-      className="flex flex-col justify-start items-center h-screen px-2 sm:px-0 custom-scrollbar overflow-hidden"      
-    >
-      <HeaderBox width={width} />
-            
-      <div 
-        className={`w-full min-w-[300px] h-[calc(100vh-150px)] text-[15px] 
-          overflow-x-hidden overflow-y-scroll flex justify-center 
-          md:pl-[15px]
+      className={`w-full flex flex-col justify-ce items-center overflow-hidden 
+        ${!viewPoint && "h-[calc(100dvh)]"}
         `}
+      style={{height: `${viewPoint}px`}}
+    >
+      {/* <div className="absolute top-0">{viewPoint}</div> */}
+      <HeaderBox width={width} />
+      <div 
         ref={totalContainerRef}
+        className={`flex flex-1 justify-center overflow-x-hidden overflow-y-scroll text-[15px] custom-scrollbar 
+          w-full min-w-[300px]             
+          px-2 sm:px-0 
+          md:pl-[12px]
+        `} //${!vp && "h-[calc(100dvh-150px)]"}
+        style = {{height: `${viewPoint - 150}px`}}
       >
-        <div className={`relative ${width}`}>
+        <div className={`relative ${width} `}>
           {messages.map((msg, index) => {
             if(msg.role == "system" || msg.role === "developer") return null;
             const isLastMsg = index === messages.length - 1
@@ -126,14 +138,13 @@ export default function ChatLayout() {
           /> 
         </div>
       </div>
-      <div className={`relative w-full h-[100px]`} />
-      {/* <div className={`relative ${width} ${lastContainerHeight > clientHeight && "min-h-[150px]"}`} /> */}
-
-      <InputBox 
-        width={width}
-        editableRef={editableRef}
-        totalContainerRef={totalContainerRef}
-      />
+      <div className={`relative w-full h-[100px] bg-yellow-500 flex justify-center`}>
+        <InputBox 
+          width={width}
+          editableRef={editableRef}
+          totalContainerRef={totalContainerRef}
+        />
+      </div>
     </div>
     </>    
   );

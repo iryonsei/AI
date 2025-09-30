@@ -41,7 +41,6 @@ export const MessageItem = React.memo(({
         ref={messageItemRef}
         className="pb-2"
     >
-        {/* <div className={`${isLastMsg ? "border border-red-500" : ""}`}></div> */}
         <div 
             ref={isLastMsg && msg.role === "user" ? topUserMsgRef : isLastMsg && msg.role === "assistant" ? topAssistantMsgRef : null}
             className={`${msg.role === "user" ? "text-right" : "text-left"}`}
@@ -57,9 +56,9 @@ export const MessageItem = React.memo(({
                 setLastContainerHeight={setLastContainerHeight}
             />
         )}
-        <div  // index 0 => system, index 1 => developer, index 2 => first user message
+        <div
             className={` 
-                ${msg.role === "user" ? "inline-block bg-slate-200 rounded-[20px] p-2 px-4" : "pb-[40px]"}
+                ${msg.role === "user" ? "inline-block bg-slate-200 rounded-[10px] p-2 px-4" : "pb-[40px]"}
             `}
         >
             <ReactMarkdown
@@ -73,4 +72,4 @@ export const MessageItem = React.memo(({
         </div>
     </div>
   );
-});
+}); 

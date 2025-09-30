@@ -1,6 +1,6 @@
 
 import mermaid from "mermaid";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export function safeMarkdown(str: string) {
   let patched = str;
@@ -39,3 +39,5 @@ export const normalizeMarkdown = (raw: string): string => {
     .replace(/\|\|/g, "|---|")
     .replace(/\*\*(.*?)\*\*/g, (_, inner) => `<strong>${inner}</strong>`);
 };
+
+
